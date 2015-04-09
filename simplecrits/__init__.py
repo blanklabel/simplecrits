@@ -9,6 +9,7 @@ This module implements the factory for the crits API
 import logging
 
 import requests
+requests.packages.urllib3.disable_warnings()
 
 from .api import API
 
