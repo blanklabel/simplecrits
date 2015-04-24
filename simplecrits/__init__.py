@@ -17,8 +17,6 @@ class Crits(object):
             username (str): Crits API user name
             api_key (str): Crits API key
             verify_ssl (bool): verify SSL certs for HTTPS requests
-
-
         '''
         self.base_uri = base_uri
         self.username = username
