@@ -31,6 +31,10 @@ if __name__ == '__main__':
     for ip in crits.ips:
         print '%s\t' % (ip.get('ip'),),
 
+    # Iterate over filtered IPs
+    for ip in crits.ips.iterfind(**filters):
+        print '%s\t' % (ip.get('ip'),),
+
     # Example of filtering while iterating
     # with list comprehension just for fun
     ips = [ ip for ip in crits.ips if int(ip['ip'].split('.')[-1]) % 2 == 0 ]
