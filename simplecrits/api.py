@@ -62,23 +62,8 @@ class API(object):
         self.options.update(options)
 
     def __iter__(self):
-        '''Iterator
-        
-        Retrieve 1st 100 resource objects and yield each one,
-        retrieve 2nd 100 resource objects and yield each one,
-        etc, etc, etc...until done.
-        '''
-        offset = 0
-        limit = 100
-
-        tmp = self.find(offset = offset, limit = limit)
-        total_count = tmp['meta']['total_count']
-
-        while offset < total_count:
-            for obj in tmp['objects']:
-                yield obj
-            offset += limit
-            tmp = self.find(offset = offset, limit = limit)
+        '''Iterator'''
+        return self.iterfind()
 
     def find(self, oid = '', **options):
         '''Find Crits resources
@@ -121,6 +106,35 @@ class API(object):
             return request.iter_content
         else:
             return request.text
+
+    def iterfind(self, **options):
+        '''Iterate over filtered find results
+
+        Retrieve 1st 100 resource objects and yield each one,
+        retrieve 2nd 100 resource objects and yield each one,
+        etc, etc, etc...until done.
+
+        See link below for docs on using query params:
+
+            https://github.com/crits/crits/wiki/Authenticated-API#searching-using-get-parameters
+
+        Args:
+            **options: keyword args
+
+        Yields:
+            Resource Object
+        '''
+        offset = 0
+        limit = 100
+
+        tmp = self.find(offset = offset, limit = limit, **options)
+        total_count = tmp['meta']['total_count']
+
+        while offset < total_count:
+            for obj in tmp['objects']:
+                yield obj
+            offset += limit
+            tmp = self.find(offset = offset, limit = limit, **options)
 
     def add(self, file_path = None, **options):
         '''Add Crits resource objects
