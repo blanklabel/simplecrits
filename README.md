@@ -1,63 +1,54 @@
-simplecrits: Crits Client API interaction for everyone
+Simple Crits
 =========================
 
-Crits currently does not have a client module for interacting with the api.
-simplecrits aims to make this libary simple to use in a manner that
-is extensable without additional code required to be written.
-the HTTP capabilities you should need, but the api is thoroughly broken.
+Simple Crits is an easy-to-use package for interacting with the Crits Authenticated REST API documented at https://github.com/crits/crits/wiki/Authenticated-API
 
-
-Search for an IP
+Examples
+--------
+**Add an IP**
 ```python
-from simplecrits import Crits
 from pprint import pprint
+from simplecrits import Crits
 
-crits = Crits(uri='https://example.com/crits/api/v1/',
-              username='joesixpack',
-              apikey='soooomanynumbers',
-              verify_ssl=False)
+username = 'apiuser'
+api_key  = 'stopthatdoghehasmygum!'
+base_uri = 'https://crits.example.com/api/v1'
 
-pprint(crits.ips.find(filters={'c-campaign.name': 'IsItMalicious',
-                               'c-source.name': 'IsItMalicious'},
-                      only='ip',
-                      limit=5))
+crits = Crits(base_uri, username, api_key, True)
+r = crits.ips.add(
+        source = 'My Test Org',
+        method = 'ips_example.py',
+        ip = '1.0.0.0',
+        ip_type = 'Address -ipv4-addr',
+        campaign = 'Test-Campaign',
+        add_indicator = True)
+pprint(r)
 ```
 
-Add an IP (Assuming already authenticated)
+**Search for IPs**
 ```python
-# Add a new ip
-crits.ips.add(source='CSIRT',
-              ip='127.0.0.127',
-              ip_type='Address - ipv4-add',
-              bucket_list='zomgdeleteme,notreal,tagsforlife',
-              confidence='high')
+filters = {
+    'c-source.name': 'My Test Org',
+    'c-campaign.name': 'Test-Campaign',
+}
+r = crits.ips.find(limit = 3, **filters)
+pprint(r)
 ```
 
-Add an IP and treat it as an indicator
+**Iterate over IP resources**
 ```python
-# Add a new ip
-crits.ips.add(source='CSIRT',
-              ip='127.0.0.127',
-              ip_type='Address - ipv4-add',
-              bucket_list='zomgdeleteme,notreal,tagsforlife',
-              add_indicator=True,
-              confidence='high')
-```
+# Iterate over all IPs
+for ip in crits.ips:
+    print '%s\t' % (ip.get('ip'),),
 
-Add a file to samples resource
-```python
-# Add a new file
-crits.samples.add(file_path='testfile.txt', source='CSIRT', 
-                  upload_type='file',
-                  bucket_list='zomgdeleteme,notreal,tagsforlife',
-                  file_format='raw',
-                  file_type='text',
-                  confidence='high')
+# Example of filtering while iterating
+# with list comprehension just for fun
+ips = [ ip for ip in crits.ips if int(ip['ip'].split('.')[-1]) % 2 == 0 ]
+pprint(ips)
 ```
 
 Features
 --------
-
 - Keep-Alive & Connection Pooling
 - Sessions with Cookie Persistence
 - Browser-style SSL Verification
@@ -66,25 +57,20 @@ Features
 - Multipart File Uploads
 - Connection Timeouts
 - Thread-safety
-- implimentation of all filters/modifiers presented here: https://github.com/crits/crits/wiki/Authenticated-API
+- Implementation of all filters/modifiers presented here: https://github.com/crits/crits/wiki/Authenticated-API
 
 Installation
 ------------
 
-To install simplecrits, simply:
-
+To install simplecrits, simply:  
 ```bash
-
-    $ pip install -e simplecrits/
+$ pip install git+https://github.com/blanklabel/simplecrits.git#egg=simplecrits
 ```
-Or if you're the setup type
-
+Or if you're the setup type:  
 ```bash
-
-    $ python setup.py install
+$ python setup.py install
 ```
 
 Contribute
 ----------
-
 No seriously -- DO IT! Most changes will probably make it into a merge
