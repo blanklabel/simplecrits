@@ -19,7 +19,7 @@ class ResourceSingleton(type):
 
     def __call__(cls, *args, **kwargs):
         '''Create & return new obj if one doesn't exists, else return existing one.'''
-        key = (cls, args[-1])
+        key = (cls, args[1])
         if key not in cls._instances:
             cls._instances[key] = super(ResourceSingleton, cls).__call__(*args, **kwargs)
 
